@@ -14,19 +14,17 @@ connect.then(() => {
     console.log('Connected correctly to server :)');
 
     // Campsite is the model we made - making new doc with it
-    const newCampsite = new Campsite({
+    Campsite.create({
         name: 'React Lake Campground',
         description: 'test'
-    });
-
-    newCampsite.save()
+    })
     .then(campsite => {
-        console.log(campsite);
-        return Campsite.find();
+        console.log(campsite); // prints array
+        return Campsite.find(); // then deletes all the docs
     })
     .then(campsites => {
-        console.log(campsites); // prints campsites array
-        return Campsite.deleteMany(); // then deletes all docs made with the model
+        console.log(campsites);
+        return Campsite.deleteMany();
     })
     .then(() => {
         return mongoose.connection.close();
