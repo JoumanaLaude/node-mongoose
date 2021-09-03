@@ -4,6 +4,7 @@ const Campsite = require('./models/campsite');
 const url = 'mongodb://localhost:27017/nucampsite';
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
+    useFindAndModify: false,
     useNewUrlParser: true,
     useUnifiedTopology: true
     // these deal with deprecation warnings
@@ -20,10 +21,27 @@ connect.then(() => {
     })
     .then(campsite => {
         console.log(campsite); // prints array
-        return Campsite.find(); // then deletes all the docs
+
+        return Campsite.findByIdAndUpdate(campsite._id, {
+            $set: { description: 'Updated Test Document' } // setting what field we want to change
+        }, {
+            new: true // returns updated document
+        });
     })
-    .then(campsites => {
-        console.log(campsites);
+    .then(campsite => {
+        console.log(campsite); // returning original document
+
+        // sub document to push into array
+        campsite.comments.push({
+            rating: 5,
+            text: 'What a great view',
+            author: 'Me'
+        });
+
+        return campsite.save();
+    })
+    .then(campsite => {
+        console.log(campsite); // returning the document we updated
         return Campsite.deleteMany();
     })
     .then(() => {
